@@ -124,3 +124,24 @@ describe('Most blogs', () => {
         assert.deepStrictEqual(listHelper.mostBlogs(listWithMultipleBlogs), expectedFavouriteAuthor)
     })
 })
+
+describe('Most likes', () => {
+    test('returns null for an empty list', () => {
+        assert.strictEqual(listHelper.mostLikes(emptyList), null)
+    })
+
+    test('the correct author for a list with one blog', () => {
+        assert.deepStrictEqual(listHelper.mostLikes(listWithOneBlog), {
+            author: 'Test Author',
+            likes: 10
+        })
+    })
+
+    test('returns the correct author for a list with multiple blogs', () => {
+        const authorWithMostLikes = {
+            author: "Edsger W. Dijkstra",
+            likes: 17
+        }
+        assert.deepStrictEqual(listHelper.mostLikes(listWithMultipleBlogs), authorWithMostLikes)
+    })
+})

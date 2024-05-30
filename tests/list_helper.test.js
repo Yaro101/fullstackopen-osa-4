@@ -103,3 +103,24 @@ describe('Favourite blog', () => {
         assert.deepStrictEqual(listHelper.favouriteBlog(listWithMultipleBlogs), expectedFavouriteBlog)
     })
 })
+
+describe('Most blogs', () => {
+    test('returns null for an empty list', () => {
+        assert.strictEqual(listHelper.mostBlogs(emptyList), null)
+    })
+
+    test('the correct author for a list with one blog', () => {
+        assert.deepStrictEqual(listHelper.mostBlogs(listWithOneBlog), {
+            author: 'Test Author',
+            blogs: 1
+        })
+    })
+
+    test('returns the correct author for a list with multiple blogs', () => {
+        const expectedFavouriteAuthor = {
+            author: "Robert C. Martin",
+            blogs: 3
+        }
+        assert.deepStrictEqual(listHelper.mostBlogs(listWithMultipleBlogs), expectedFavouriteAuthor)
+    })
+})

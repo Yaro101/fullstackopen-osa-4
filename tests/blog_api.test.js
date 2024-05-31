@@ -135,7 +135,7 @@ test('a valid blog can be added', async () => {
 test('if the likes property is missing from the request, it will default to 0', async () => {
     const newBlog = {
         title: "Blog without likes",
-        author: "Not a liked one",
+        author: "Not so liked one",
         url: "https://examtrple.com"
     }
 

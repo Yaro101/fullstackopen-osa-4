@@ -87,6 +87,30 @@ test('unique identifier property of blog posts is named id', async () => {
     })
 })
 
+test('respond with 400 if title is missing', async () => {
+    const newBlog = {
+        author: "Test with no title",
+        url: "https://examtrple.com"
+    }
+
+    await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(400)
+})
+
+test('respond with 400 if url is missing', async () => {
+    const newBlog = {
+        title: "Test with no url",
+        author: "Test author"
+    }
+
+    await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(400)
+})
+
 test('a valid blog can be added', async () => {
     const newBlog = {
         title: "Async/Await in JavaScript",

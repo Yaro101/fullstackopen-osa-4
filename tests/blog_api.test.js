@@ -178,6 +178,37 @@ describe('Blog API', () => {
                 .expect(404)
         })
     })
+
+    describe('Updating blogs', () => {
+        test('succeeds with valid data', async () => {
+            const blogsAtStart = await Blog.find({})
+            const blogToUpdate = blogsAtStart[0]
+
+            const newLikes = { likes: 99 }
+
+            const response = await api
+                .put(`/api/blogs/${blogToUpdate.id}`)
+                .send(newLikes)
+                .expect(200)
+                .expect('Content-Type', /application\/json/)
+
+            assert.strictEqual(response.body.likes, newLikes.likes)
+
+            const blogsAtEnd = await Blog.find({})
+            const updatedBlog = blogsAtEnd.find(blog => blog.id === blogToUpdate.id)
+            assert.strictEqual(updatedBlog.likes, newLikes.likes)
+        })
+
+        test('fails with status code 404 if blog does not exist', async () => {
+            const nonExistingId = await new mongoose.Types.ObjectId()
+            const newLikes = { likes: 99 }
+
+            await api
+                .put(`/api/blogs/${nonExistingId}`)
+                .send(newLikes)
+                .expect(404)
+        })
+    })
 })
 
 after(async () => {

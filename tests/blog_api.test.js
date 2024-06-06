@@ -4,12 +4,26 @@ const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
 const Blog = require('../models/blog')
-const blogsRouter = require('../controllers/blogs')
+const User = require('../models/user')
+// const blogsRouter = require('../controllers/blogs')
 
 const api = supertest(app)
+
+const initialUsers = [
+    {
+        username: 'mluukkai',
+        _id: new mongoose.Types.ObjectId(),
+      },
+      {
+        username: 'hellas',
+        _id: new mongoose.Types.ObjectId(),
+      },
+]
+
 const initialBlogs = [
     {
-        _id: "5a422a851b54a676234d17f7",
+        _id: new mongoose.Types.ObjectId(),
+        user: initialUsers[0]._id,
         title: "React patterns",
         author: "Michael Chan",
         url: "https://reactpatterns.com/",
@@ -17,7 +31,8 @@ const initialBlogs = [
         __v: 0
     },
     {
-        _id: "5a422aa71b54a676234d17f8",
+        _id: new mongoose.Types.ObjectId(),
+        user: initialUsers[1]._id,
         title: "Go To Statement Considered Harmful",
         author: "Edsger W. Dijkstra",
         url: "http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html",
@@ -25,7 +40,8 @@ const initialBlogs = [
         __v: 0
     },
     {
-        _id: "5a422b3a1b54a676234d17f9",
+        _id: new mongoose.Types.ObjectId(),
+        user: initialUsers[0]._id,
         title: "Canonical string reduction",
         author: "Edsger W. Dijkstra",
         url: "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html",
@@ -33,7 +49,8 @@ const initialBlogs = [
         __v: 0
     },
     {
-        _id: "5a422b891b54a676234d17fa",
+        _id: new mongoose.Types.ObjectId(),
+        user: initialUsers[1]._id,
         title: "First class tests",
         author: "Robert C. Martin",
         url: "http://blog.cleancoder.com/uncle-bob/2017/05/05/TestDefinitions.htmll",
@@ -41,7 +58,8 @@ const initialBlogs = [
         __v: 0
     },
     {
-        _id: "5a422ba71b54a676234d17fb",
+        _id: new mongoose.Types.ObjectId(),
+        user: initialUsers[0]._id,
         title: "TDD harms architecture",
         author: "Robert C. Martin",
         url: "http://blog.cleancoder.com/uncle-bob/2017/03/03/TDD-Harms-Architecture.html",
@@ -49,7 +67,8 @@ const initialBlogs = [
         __v: 0
     },
     {
-        _id: "5a422bc61b54a676234d17fc",
+        _id: new mongoose.Types.ObjectId(),
+        user: initialUsers[1]._id,
         title: "Type wars",
         author: "Robert C. Martin",
         url: "http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html",
@@ -60,6 +79,11 @@ const initialBlogs = [
 
 describe('Blog API', () => {
     beforeEach(async () => {
+        await User.deleteMany({})
+        for (let user of initialUsers) {
+            let userObject = new User(user)
+            await userObject.save()
+        }
         await Blog.deleteMany({})
         for (let blog of initialBlogs) {
             let blogObject = new Blog(blog)
@@ -94,6 +118,7 @@ describe('Blog API', () => {
     describe('Adding blogs', () => {
         test('respond with 400 if title is missing', async () => {
             const newBlog = {
+                userId: initialUsers[0]._id.toString(),
                 author: "Test with no title",
                 url: "https://examtrple.com"
             }
@@ -106,6 +131,7 @@ describe('Blog API', () => {
 
         test('respond with 400 if url is missing', async () => {
             const newBlog = {
+                userId: initialUsers[0]._id.toString(),
                 title: "Test with no url",
                 author: "Test author"
             }
@@ -121,7 +147,8 @@ describe('Blog API', () => {
                 title: "Async/Await in JavaScript",
                 author: "John Tester Doe",
                 url: "https://example.com",
-                likes: 4
+                likes: 4,
+                userId: initialUsers[0]._id.toString()
             }
             await api
                 .post('/api/blogs')
@@ -141,7 +168,8 @@ describe('Blog API', () => {
             const newBlog = {
                 title: "Blog without likes",
                 author: "Not so liked one",
-                url: "https://examtrple.com"
+                url: "https://examtrple.com",
+                userId: initialUsers[0]._id.toString(),
             }
 
             const response = await api

@@ -18,7 +18,7 @@ beforeEach(async () => {
 describe('User management', () => {
     test('creating a user with valid data', async () => {
         const newUser = {
-            username: 'mluukkai 2',
+            username: 'mluukkai2',
             name: 'Matti Luukkainen',
             password: 'salainen'
         }
@@ -36,7 +36,7 @@ describe('User management', () => {
 
     test('creating a user fails with a short password', async () => {
         const newUser = {
-            username: 'mluukkai 3',
+            username: 'mluukkai3',
             name: 'Matti Luukkainen',
             password: 'sa'
         }
@@ -49,7 +49,7 @@ describe('User management', () => {
 
     test('fetching users returns users', async () => {
         const newUser = {
-            username: 'mluukkai 4',
+            username: 'mluukkai4',
             name: 'Matti Luukkainen',
             password: 'salainen'
         }

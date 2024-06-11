@@ -2,15 +2,9 @@ const jwt = require('jsonwebtoken')
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
 const User = require('../models/user')
+const middleware = require('../utils/middleware')
 // const { error } = require('../utils/logger')
 
-const getTokenFrom = request => {
-    const authorization = request.get('authorization')
-    if (authorization && authorization.startsWith('Bearer ')) {
-        return authorization.replace('Bearer ', '')
-    }
-    return null
-}
 
 blogsRouter.get('/', async (request, response) => {
     const blogs = await Blog
@@ -20,22 +14,17 @@ blogsRouter.get('/', async (request, response) => {
 
 })
 
-blogsRouter.post('/', async (request, response) => {
+blogsRouter.post('/', middleware.userExtractor, async (request, response) => {
     const { title, author, url, likes, userId } = request.body
 
     if (!title || !url) {
         return response.status(400).json({ error: "title or url missing" })
     }
 
-    const token = getTokenFrom(request)
-    const decodedToken = jwt.verify(token, process.env.SECRET)
-    if (!decodedToken.id) {
-        return response.status(401).json({ error: 'token invalid' })
-    }
-    const user = await User.findById(decodedToken.id)
+    const user = request.user
 
     if (!user) {
-        return response.status(400).json({ error: 'invalid user id' })
+        return response.status(401).json({ error: 'token missing or invalid' })
     }
 
     const blog = new Blog({
@@ -51,12 +40,10 @@ blogsRouter.post('/', async (request, response) => {
     response.status(201).json(savedBlog)
 })
 
-blogsRouter.delete('/:id', async (request, response) => {
-    const token = getTokenFrom(request)
-    const decodedToken = jwt.verify(token, process.env.SECRET)
-
-    if (!decodedToken.id) {
-        return response.status(401).json({ error: 'token invalid' })
+blogsRouter.delete('/:id', middleware.userExtractor, async (request, response) => {
+    const user = request.user
+    if (!user) {
+        return response.status(401).json({ error: 'token missing or invalid' })
     }
 
     const id = request.params.id
@@ -65,7 +52,7 @@ blogsRouter.delete('/:id', async (request, response) => {
         return response.status(404).json({ error: 'blog not found' })
     }
 
-    if (blog.user.toString() !== decodedToken.id) {
+    if (blog.user.toString() !== user._id.toString()) {
         return response.status(403).json({ error: 'unauthorized action' })
     }
 

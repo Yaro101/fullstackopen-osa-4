@@ -82,16 +82,6 @@ const initialBlogs = [
 describe('Blog API', () => {
     beforeEach(async () => {
         console.log('Deleting all users and blogs...')
-        // await User.deleteMany({})
-        // for (let user of initialUsers) {
-        //     let userObject = new User(user)
-        //     await userObject.save()
-        // }
-        // await Blog.deleteMany({})
-        // for (let blog of initialBlogs) {
-        //     let blogObject = new Blog(blog)
-        //     await blogObject.save()
-        // }
 
         await User.deleteMany({})
         await Blog.deleteMany({})
@@ -112,12 +102,6 @@ describe('Blog API', () => {
 
             assert(response.body.length === initialBlogs.length)
         })
-
-        // test('there are six blogs', async () => {
-        //     const response = await api.get('/api/blogs')
-        //     const blogs = response.body
-        //     assert.strictEqual(blogs.length, initialBlogs.length)
-        // })
 
         test('unique identifier property of blog posts is named id', async () => {
             const response = await api.get('/api/blogs')
